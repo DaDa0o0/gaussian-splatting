@@ -50,8 +50,8 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     )
 
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
-    if torch.cuda.is_available():
-        rasterizer = rasterizer.to("cuda")
+    if torch.cuda.device_count() > 1:
+        print("use", torch.cuda.device_count(), "GPUs!")
         rasterizer = nn.DataParallel(rasterizer)
 
     means3D = pc.get_xyz
