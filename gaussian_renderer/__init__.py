@@ -11,6 +11,7 @@
 
 import torch
 import math
+import torch.nn as nn
 from diff_gaussian_rasterization import GaussianRasterizationSettings, GaussianRasterizer
 from scene.gaussian_model import GaussianModel
 from utils.sh_utils import eval_sh
@@ -49,6 +50,9 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     )
 
     rasterizer = GaussianRasterizer(raster_settings=raster_settings)
+    if torch.cuda.is_available():
+        rasterizer = rasterizer.to("cuda")
+        rasterizer = nn.DataParallel(rasterizer)
 
     means3D = pc.get_xyz
     means2D = screenspace_points
